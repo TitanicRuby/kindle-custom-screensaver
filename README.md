@@ -100,7 +100,9 @@ The default screensavers use an **indexed grayscale PNG palette**, 1072×1448 pi
                            # originals_folder (see note below on adding photos more than once)
     ```
 
-    The script **auto-detects the existing naming pattern** (e.g. `bg_ss00.png`) from the files in `originals_folder` — you don't need to hardcode it. It prints what it detected, so double-check that line of output matches what you'd expect (if your originals folder has multiple sets, like an adult rotation and a kids-mode rotation, it picks the largest group by default — override with `naming_prefix = "bg_ss"` etc. if it picks the wrong one).
+    The script **auto-detects the existing naming pattern** (e.g. `bg_ss00.png`) from the files in `originals_folder` — you don't need to hardcode it. It picks whichever numbered set has the **most files** — on the tested device that's correctly the adult/casual set (20 files) over the kids-mode set (17 files).
+
+    > ⚠️ **This is a count-based guess, not a guarantee.** Always read the printed line — `Detected naming pattern: bg_ss{2 digits}.png (N files found)` — before letting the script (especially in `replace` mode) touch anything. If a device ever has *more* kids-mode screensavers than adult ones, auto-detection would confidently pick the wrong set. In `replace` mode this matters a lot: the `delete_originals.sh` it generates only targets whatever group it detected, and kids-mode screensavers are tied to Kindle's FreeTime feature — deleting the wrong set isn't as easy to undo as swapping a photo back. If you have any doubt, set `naming_prefix = "bg_ss"` explicitly to force the correct set rather than trusting the auto-pick.
 
 4. Choose your mode:
     - **`mode = "add"`** — keeps everything the Kindle already has, just appends your photos as new files (`bg_ss20.png`, `bg_ss21.png`, ...).
@@ -156,7 +158,7 @@ Let the Kindle go to sleep (or trigger sleep manually) to see your new images in
 
 Replace mode only *adds* your renumbered images; it doesn't touch the originals on the Kindle. To actually end up with **only** your own images in the rotation, the script also writes a `delete_originals.sh` inside your output folder, listing the exact original files it detected in Step 3.
 
-1. **Open and read `delete_originals.sh` before doing anything else.** It's a plain text file — check the file list matches what you expect.
+1. **Open and read `delete_originals.sh` before doing anything else.** It's a plain text file — check the file list matches what you expect. Specifically, **confirm the filenames start with the adult/casual prefix (e.g. `bg_ss`) and not a kids-mode one (e.g. `bg_kids_ss`).** The script picks whichever set had more files at conversion time — if that guess was ever wrong (see the warning in Step 3), this is your last chance to catch it before anything gets deleted.
 2. Copy it to the Kindle and run it over SSH:
 
     ```bash
