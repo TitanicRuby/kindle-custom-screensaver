@@ -152,7 +152,7 @@ Once the upload finishes, go back to the SSH session and set the filesystem back
 mntroot ro
 ```
 
-Let the Kindle go to sleep (or trigger sleep manually) to see your new images in the rotation.
+**Restart the Kindle now** — swipe down → Settings → Device Options → Restart (wording may vary slightly by firmware). The screensaver rotation appears to be loaded into memory rather than rescanned live, so just letting the device sleep isn't reliable after adding or removing files — a full restart is what actually makes it pick up the change. After restarting, let the device sleep to check your new images are in the rotation.
 
 ### Step 4b: If you used `mode = "replace"` — removing the originals
 
@@ -168,7 +168,8 @@ Replace mode only *adds* your renumbered images; it doesn't touch the originals 
 
     The first line copies the script to the Kindle; the second connects and runs it there in one step — you don't need to manually `ssh` in first for this part.
 
-3. It handles `mntroot rw`/`mntroot ro` around the deletion itself, so you don't need to toggle that separately for this step.
+3. It handles `mntroot rw`/`mntroot ro` around the deletion itself, so you don't need to toggle that separately for this step. It also tolerates files that are already missing (e.g. if you'd already deleted some manually) without stopping partway through.
+4. **Restart the Kindle again after this step**, same as above — deleting files without a restart can leave the screensaver rotation referencing files that no longer exist, which can cause the rotation to stop advancing partway through instead of cleanly skipping them.
 
 Since your Step 2 download already backed up the originals to your PC, nothing is lost even after this — you can always `scp` them back later if you want the defaults back.
 
@@ -194,6 +195,12 @@ sudo apt install python3-pip
 
 **`scp` upload fails with "Failure"**
 The Kindle's root filesystem is read-only by default. Run `mntroot rw` in your SSH session before uploading, and `mntroot ro` afterward.
+
+**New screensavers don't show up, or rotation stops partway / stalls after deleting files**
+Two separate things can cause this, and both were confirmed while building this tool:
+
+1. **Restart, don't just sleep.** The screensaver rotation seems to be loaded into memory rather than rescanned from the folder live. Restart the Kindle (Settings → Device Options → Restart) after uploading new files or after running `delete_originals.sh`.
+2. **The numbering must start at index 0 (`bg_ss00.png`).** If your screensaver folder has files numbered from, say, `20` upward with no `00`, the screen may just freeze on whatever was last displayed instead of showing anything — the module appears to expect a `bg_ss00.png` anchor rather than tolerating gaps or non-zero starting points. This can happen if you mix `add` and `replace` runs across multiple sessions and lose track of what's actually on the device (`ls /usr/share/blanket/screensaver/` over SSH to check). If in doubt, do a clean `mode = "replace"` run so numbering restarts at 0.
 
 **More than 80–100 photos**
 Digit width is auto-detected from your originals (usually 2 digits, so `99` is the practical max index). The script will refuse to run and tell you the max if your photo count would overflow it. It's also untested whether the Kindle's screensaver scanner has an upper index limit — verify a newly added high-numbered file actually appears in rotation.

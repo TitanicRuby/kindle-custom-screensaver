@@ -178,10 +178,11 @@ if mode == "replace":
         f.write("# Run this ON THE KINDLE over SSH to remove the original screensavers.\n")
         f.write("# REVIEW THE FILE LIST BELOW BEFORE RUNNING - this deletes files.\n")
         f.write(f"# Your originals are already backed up locally at: {originals_folder}\n\n")
-        f.write("set -e\n")
+        f.write("# Uses 'rm -f' so an already-missing file won't stop the script -\n")
+        f.write("# that would otherwise leave the filesystem stuck read-write.\n")
         f.write("mntroot rw\n")
         for fname in matched_files:
-            f.write(f'rm -v "{remote_screensaver_path}{fname}"\n')
+            f.write(f'rm -fv "{remote_screensaver_path}{fname}"\n')
         f.write("mntroot ro\n")
     print(f"\nGenerated {delete_script_path}")
     print(f"It will delete {len(matched_files)} original file(s) from the Kindle:")
