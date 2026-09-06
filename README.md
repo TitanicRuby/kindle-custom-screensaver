@@ -159,12 +159,14 @@ Let the Kindle go to sleep (or trigger sleep manually) to see your new images in
 Replace mode only *adds* your renumbered images; it doesn't touch the originals on the Kindle. To actually end up with **only** your own images in the rotation, the script also writes a `delete_originals.sh` inside your output folder, listing the exact original files it detected in Step 3.
 
 1. **Open and read `delete_originals.sh` before doing anything else.** It's a plain text file — check the file list matches what you expect. Specifically, **confirm the filenames start with the adult/casual prefix (e.g. `bg_ss`) and not a kids-mode one (e.g. `bg_kids_ss`).** The script picks whichever set had more files at conversion time — if that guess was ever wrong (see the warning in Step 3), this is your last chance to catch it before anything gets deleted.
-2. Copy it to the Kindle and run it over SSH:
+2. Run these two commands **on your PC** (a normal terminal — *not* inside an existing SSH session on the Kindle; the Kindle's own shell doesn't have `scp`/`ssh` installed to reach itself):
 
     ```bash
     scp -P 2222 kindle_screensavers_new/delete_originals.sh root@<kindle-ip>:/tmp/
     ssh -p 2222 root@<kindle-ip> "sh /tmp/delete_originals.sh"
     ```
+
+    The first line copies the script to the Kindle; the second connects and runs it there in one step — you don't need to manually `ssh` in first for this part.
 
 3. It handles `mntroot rw`/`mntroot ro` around the deletion itself, so you don't need to toggle that separately for this step.
 
