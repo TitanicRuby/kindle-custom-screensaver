@@ -12,6 +12,8 @@ This works on Kindles jailbroken with a **modern (KPM-based)** jailbreak, such a
 
 Other models/generations almost certainly use different screensaver resolutions and possibly different palette files — **do not assume 1072×1448 is correct for your device.** See [Step 2](#step-2-connect-and-back-up-the-originals) to check your own device's actual specs before converting anything. If you confirm this working on another model, consider opening a PR to add it here.
 
+> 💡 **Not comfortable with Python or a terminal?** [`web-converter/`](./web-converter/) is a point-and-click alternative for **Step 3** below (turning your photos into screensaver-ready images) — a single HTML file you just open in your browser, no install, nothing to type. You'll still need Steps 1, 2, and 4 below (jailbreak, SSH, upload) to actually get photos on your Kindle — this only replaces the conversion step. See [its README](./web-converter/README.md) for how to get and open it.
+
 ---
 
 ## Prerequisites
@@ -83,6 +85,8 @@ The default screensavers use an **indexed grayscale PNG palette**, 1072×1448 pi
 ---
 
 ## Step 3: Prepare your photos
+
+> Prefer a point-and-click tool over editing a Python script? Use [`web-converter/`](./web-converter/) instead of the steps below, then skip ahead to Step 4 once you have your converted PNGs.
 
 1. Put the photos you want to convert into a folder, e.g. `~/Downloads/imgese`.
 2. Download [`batch_convert.py`](./batch_convert.py) from this repo (anywhere is fine — just point the settings at the right paths).
@@ -172,6 +176,12 @@ Replace mode only *adds* your renumbered images; it doesn't touch the originals 
 4. **Restart the Kindle again after this step**, same as above — deleting files without a restart can leave the screensaver rotation referencing files that no longer exist, which can cause the rotation to stop advancing partway through instead of cleanly skipping them.
 
 Since your Step 2 download already backed up the originals to your PC, nothing is lost even after this — you can always `scp` them back later if you want the defaults back.
+
+## Support
+
+Scan to buy me a coffee:
+
+<img src="qr-code.png" alt="Buy Me a Coffee QR code" width="200">
 
 ---
 
